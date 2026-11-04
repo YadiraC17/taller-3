@@ -115,7 +115,7 @@ story = [
     paragraph("Los montos deben ser positivos y tener hasta dos decimales. La categoría debe ser propia y coincidir con el tipo de la transacción; solo las categorías de gasto aceptan presupuestos. No se elimina una categoría con movimientos asociados. Las contraseñas usan hashing; recursos ajenos devuelven 404 y la información sensible no se serializa."),
     paragraph("El seguimiento compara el gasto persistido de la misma categoría, moneda y mes contra el límite. Menos de 80%: dentro del presupuesto; desde 80% y menos de 100%: cerca del límite; 100% o más: excedido. PEN y USD se agregan por separado."),
     paragraph("6. Pruebas y ejecución", "SectionTitle"),
-    paragraph("La suite automatizada cubre registro y login, correo duplicado, rutas protegidas, montos inválidos, aislamiento entre usuarios, presupuestos duplicados, relaciones de categoría y cálculo de reportes/seguimiento. Las pruebas utilizan SQLite en memoria y se ejecutan con python -m pytest -q desde backend."),
+    paragraph("La suite automatizada cubre 17 casos: registro/login, correo duplicado, JWT ausente/inválido/expirado, validación de montos/monedas/tipos, aislamiento, CRUD, filtros, presupuestos y reportes. Comprueba SQLite en memoria y persistencia entre dos instancias Flask con un archivo temporal. Resultado verificado: 17 passed (03/11/2026). Se ejecuta con python -m pytest -q desde backend."),
     paragraph("Para iniciar, instalar backend/requirements.txt, ejecutar flask --app run db upgrade, iniciar python run.py en backend y servir frontend con python -m http.server 5500 --directory frontend. La guía reproducible completa se encuentra en README.md."),
 ]
 

@@ -82,6 +82,7 @@ async function loadData() {
 }
 
 function renderAll() {
+  renderCategoryFilter();
   renderCurrencies($("#dashboard-currencies"));
   renderCurrencies($("#report-summary"));
   renderCategoryBars($("#dashboard-expenses"), state.expenses);
@@ -92,6 +93,14 @@ function renderAll() {
   renderTransactionsTable($("#transactions-table"), state.transactions, true);
   renderCategories();
   renderEvolution();
+}
+
+function renderCategoryFilter() {
+  const select = $("#transaction-filters select[name='categoria']");
+  const selected = select.value;
+  select.innerHTML = `<option value="">Todas</option>${state.categories.map((category) =>
+    `<option value="${category.id_categoria}">${escapeHtml(category.nombre)}</option>`).join("")}`;
+  select.value = selected;
 }
 
 function renderCurrencies(container) {

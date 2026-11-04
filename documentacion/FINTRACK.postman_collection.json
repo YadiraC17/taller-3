@@ -25,7 +25,7 @@
         },
         {
           "name": "Iniciar sesión",
-          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 200) {", "  pm.environment.set('token', pm.response.json().data.access_token);", "}"] } }],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 200) {", "  pm.collectionVariables.set('token', pm.response.json().data.access_token);", "}"] } }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -44,7 +44,7 @@
       "item": [
         {
           "name": "Crear categoría de gasto",
-          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) {", "  pm.environment.set('categoriaId', pm.response.json().data.id_categoria);", "}"] } }],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) {", "  pm.collectionVariables.set('categoriaId', pm.response.json().data.id_categoria);", "}"] } }],
           "request": {
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -76,7 +76,7 @@
       "item": [
         {
           "name": "Crear presupuesto",
-          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) {", "  pm.environment.set('presupuestoId', pm.response.json().data.id_presupuesto);", "}"] } }],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) {", "  pm.collectionVariables.set('presupuestoId', pm.response.json().data.id_presupuesto);", "}"] } }],
           "request": {
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],

@@ -69,7 +69,7 @@ Las pruebas usan SQLite en memoria y no modifican la base de desarrollo.
 - Seguimiento de presupuestos y reportes mensuales calculados en el backend.
 - Interfaz adaptable que consume los endpoints propios con Fetch API.
 
-La documentación de endpoints está en [documentacion/API.md](documentacion/API.md), el modelo de datos en [documentacion/MODELO_DATOS.md](documentacion/MODELO_DATOS.md) y el resumen técnico en [documentacion/DOCUMENTACION_TECNICA.md](documentacion/DOCUMENTACION_TECNICA.md). La colección manual está en [documentacion/FINTRACK.postman_collection.json](documentacion/FINTRACK.postman_collection.json).
+La documentación de endpoints está en [documentacion/API.md](documentacion/API.md), el modelo de datos en [documentacion/MODELO_DATOS.md](documentacion/MODELO_DATOS.md), el [control de cumplimiento](documentacion/CONTROL_CUMPLIMIENTO.md) y el resumen técnico en [documentacion/DOCUMENTACION_TECNICA.md](documentacion/DOCUMENTACION_TECNICA.md). La colección manual está en [documentacion/FINTRACK.postman_collection.json](documentacion/FINTRACK.postman_collection.json).
 
 Para generar el PDF técnico desde la raíz del proyecto:
 
