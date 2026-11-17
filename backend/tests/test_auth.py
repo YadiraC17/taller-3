@@ -1,6 +1,11 @@
 from datetime import timedelta
 
+import pytest
+
 from flask_jwt_extended import create_access_token
+
+from app import create_app
+from app.config import normalize_database_url
 
 
 def test_register_and_login(client):
@@ -44,3 +49,40 @@ def test_private_endpoint_rejects_expired_token(client, app):
     response = client.get("/api/transacciones", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
     assert response.json["success"] is False
+
+
+def test_logout_revokes_access_token(client, create_account):
+    account = create_account()
+    logout = client.post("/api/auth/logout", headers=account["headers"])
+
+    assert logout.status_code == 200
+    response = client.get("/api/auth/me", headers=account["headers"])
+    assert response.status_code == 401
+    assert response.json["success"] is False
+
+
+def test_production_rejects_example_secrets():
+    with pytest.raises(RuntimeError, match="Production requires"):
+        create_app({
+            "APP_ENV": "production",
+            "SECRET_KEY": "replace-with-a-long-random-secret",
+            "JWT_SECRET_KEY": "replace-with-another-long-random-secret",
+        })
+
+
+@pytest.mark.parametrize(
+    ("database_url", "expected"),
+    [
+        (
+            "postgres://user:pass@host/db?sslmode=require",
+            "postgresql+psycopg://user:pass@host/db?sslmode=require",
+        ),
+        (
+            "postgresql://user:pass@host/db?sslmode=require",
+            "postgresql+psycopg://user:pass@host/db?sslmode=require",
+        ),
+        ("sqlite:///fintrack.db", "sqlite:///fintrack.db"),
+    ],
+)
+def test_normalize_database_url(database_url, expected):
+    assert normalize_database_url(database_url) == expected

@@ -1,7 +1,7 @@
 from app.models import Transaccion
 
 
-def listar(id_usuario, filtros):
+def listar(id_usuario, filtros, page, per_page):
     query = Transaccion.query.filter_by(id_usuario=id_usuario)
     if filtros.get("tipo"):
         query = query.filter_by(tipo=filtros["tipo"])
@@ -13,7 +13,11 @@ def listar(id_usuario, filtros):
         query = query.filter(Transaccion.fecha >= filtros["fecha_inicio"])
     if filtros.get("fecha_fin"):
         query = query.filter(Transaccion.fecha <= filtros["fecha_fin"])
-    return query.order_by(Transaccion.fecha.desc(), Transaccion.id_transaccion.desc()).all()
+    return query.order_by(Transaccion.fecha.desc(), Transaccion.id_transaccion.desc()).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False,
+    )
 
 
 def obtener(id_usuario, id_transaccion):

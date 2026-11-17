@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: fintrack-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && flask --app run db upgrade && waitress-serve --listen=0.0.0.0:$PORT run:app
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: ""

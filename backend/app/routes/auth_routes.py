@@ -1,6 +1,9 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+import time
 
-from app.models import Usuario
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required
+
+from app import db
+from app.models import RevokedToken, Usuario
 from app.routes import api
 from app.services import auth_service
 from app.utils.responses import success
@@ -27,7 +30,12 @@ def me():
     return success("Usuario autenticado", {"usuario": usuario.to_dict()})
 
 
-@api.get("/auth/logout")
+@api.post("/auth/logout")
 @jwt_required()
 def logout():
-    return success("Elimina el token del cliente para cerrar sesión")
+    now = int(time.time())
+    RevokedToken.query.filter(RevokedToken.expires_at <= now).delete(synchronize_session=False)
+    token = get_jwt()
+    db.session.add(RevokedToken(jti=token["jti"], expires_at=token["exp"]))
+    db.session.commit()
+    return success("Sesión cerrada correctamente")

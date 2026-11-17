@@ -236,6 +236,48 @@ def test_transaction_filters_by_date_type_currency_and_category(client, create_a
     assert response.json["data"][0]["monto"] == 12
 
 
+def test_transaction_list_is_paginated(client, create_account):
+    account = create_account()
+    category_id = create_expense_category(client, account["headers"])
+    for amount in (10, 20, 30):
+        response = client.post("/api/transacciones", headers=account["headers"], json={
+            "id_categoria": category_id,
+            "tipo": "GASTO",
+            "monto": amount,
+            "moneda": "PEN",
+            "fecha": date.today().isoformat(),
+        })
+        assert response.status_code == 201
+
+    first_page = client.get(
+        "/api/transacciones?page=1&per_page=2",
+        headers=account["headers"],
+    )
+    assert first_page.status_code == 200
+    assert len(first_page.json["data"]) == 2
+    assert first_page.json["pagination"] == {
+        "page": 1,
+        "per_page": 2,
+        "total": 3,
+        "pages": 2,
+        "has_next": True,
+        "has_prev": False,
+    }
+
+    second_page = client.get(
+        "/api/transacciones?page=2&per_page=2",
+        headers=account["headers"],
+    )
+    assert len(second_page.json["data"]) == 1
+    assert second_page.json["pagination"]["has_next"] is False
+
+    invalid_page_size = client.get(
+        "/api/transacciones?per_page=101",
+        headers=account["headers"],
+    )
+    assert invalid_page_size.status_code == 400
+
+
 def test_category_duplicate_and_budget_crud(client, create_account):
     account = create_account()
     category_id = create_expense_category(client, account["headers"])

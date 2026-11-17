@@ -13,6 +13,8 @@ from app.utils.validators import (
 
 def listar(id_usuario, params):
     filtros = {}
+    page = valid_integer(params.get("page", 1), "page", minimum=1)
+    per_page = valid_integer(params.get("per_page", 50), "per_page", minimum=1, maximum=100)
     if params.get("tipo"):
         filtros["tipo"] = valid_type(params["tipo"])
     if params.get("moneda"):
@@ -24,7 +26,16 @@ def listar(id_usuario, params):
             filtros[field] = valid_date(params[field], field)
     if filtros.get("fecha_inicio") and filtros.get("fecha_fin") and filtros["fecha_inicio"] > filtros["fecha_fin"]:
         raise ValidationError("La fecha de inicio no puede ser posterior a la fecha de fin")
-    return transaccion_repository.listar(id_usuario, filtros)
+    pagination = transaccion_repository.listar(id_usuario, filtros, page, per_page)
+    metadata = {
+        "page": pagination.page,
+        "per_page": pagination.per_page,
+        "total": pagination.total,
+        "pages": pagination.pages,
+        "has_next": pagination.has_next,
+        "has_prev": pagination.has_prev,
+    }
+    return pagination.items, metadata
 
 
 def obtener(id_usuario, id_transaccion):

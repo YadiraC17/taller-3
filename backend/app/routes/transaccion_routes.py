@@ -21,8 +21,12 @@ def crear_transaccion():
 @api.get("/transacciones")
 @jwt_required()
 def listar_transacciones():
-    transacciones = transaccion_service.listar(usuario_id(), request.args)
-    return success("Transacciones consultadas", [item.to_dict() for item in transacciones])
+    transacciones, pagination = transaccion_service.listar(usuario_id(), request.args)
+    return success(
+        "Transacciones consultadas",
+        [item.to_dict() for item in transacciones],
+        pagination=pagination,
+    )
 
 
 @api.get("/transacciones/<int:id_transaccion>")

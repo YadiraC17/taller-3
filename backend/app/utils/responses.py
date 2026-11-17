@@ -1,10 +1,12 @@
 from flask import jsonify
 
 
-def success(message, data=None, status=200):
+def success(message, data=None, status=200, pagination=None):
     body = {"success": True, "message": message}
     if data is not None:
         body["data"] = data
+    if pagination is not None:
+        body["pagination"] = pagination
     return jsonify(body), status
 
 

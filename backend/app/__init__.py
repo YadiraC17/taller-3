@@ -33,15 +33,42 @@ def create_app(test_config=None):
     if test_config:
         app.config.from_mapping(test_config)
 
+    if app.config["APP_ENV"] == "production":
+        secret_key = app.config["SECRET_KEY"]
+        jwt_secret_key = app.config["JWT_SECRET_KEY"]
+        known_defaults = {
+            "dev-only-secret-key-change-before-deploy-01",
+            "dev-only-jwt-secret-key-change-before-deploy-01",
+            "replace-with-a-long-random-secret",
+            "replace-with-another-long-random-secret",
+        }
+        if (
+            not isinstance(secret_key, str)
+            or not isinstance(jwt_secret_key, str)
+            or len(secret_key) < 32
+            or len(jwt_secret_key) < 32
+            or secret_key == jwt_secret_key
+            or secret_key in known_defaults
+            or jwt_secret_key in known_defaults
+            or secret_key.startswith("replace-with-")
+            or jwt_secret_key.startswith("replace-with-")
+        ):
+            raise RuntimeError("Production requires two distinct random secrets of at least 32 characters")
+
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     CORS(app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}})
 
     from app import models
+    from app.models import RevokedToken
     from app.routes import api
 
     app.register_blueprint(api, url_prefix="/api")
+
+    @jwt.token_in_blocklist_loader
+    def token_is_revoked(_header, payload):
+        return RevokedToken.query.filter_by(jti=payload["jti"]).first() is not None
 
     from app.utils.responses import failure
     from app.utils.validators import ValidationError
@@ -67,6 +94,10 @@ def create_app(test_config=None):
     @jwt.expired_token_loader
     def expired_token(_header, _payload):
         return failure("La sesión ha expirado", 401)
+
+    @jwt.revoked_token_loader
+    def revoked_token(_header, _payload):
+        return failure("La sesión ha sido revocada", 401)
 
     @app.errorhandler(404)
     def not_found(_error):

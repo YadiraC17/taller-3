@@ -5,3 +5,5 @@ Flask-JWT-Extended
 Flask-CORS
 python-dotenv
 pytest
+waitress
+psycopg[binary]
