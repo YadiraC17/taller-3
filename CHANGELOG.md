@@ -6,6 +6,7 @@ Cambios notables del repositorio FINTRACK. Los enlaces apuntan a los commits pub
 
 - Documenta rutas, métodos, parámetros, ejemplos JSON y códigos HTTP; añade una colección Postman para probar los endpoints.
 - Corrige el campo de año de la respuesta de evolución financiera cuando no se envía el parámetro `anio`.
+- Añade el documento técnico PDF y un generador reproducible que limita el contenido a cinco páginas, sin contar la carátula.
 
 - [`1ccfe62`](https://github.com/YadiraC17/taller-3/commit/1ccfe62): oculta la URL de la API de la pantalla inicial y actualiza la APK pública de pruebas.
 - [`689c670`](https://github.com/YadiraC17/taller-3/commit/689c670): configura Render como API predeterminada en Android y publica la primera APK de pruebas.
