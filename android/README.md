@@ -37,13 +37,13 @@ Android envía el token con `Authorization: Bearer <JWT>`. No se implementan cá
 `0.0.0.0` permite conexiones entrantes de la red local; la URL no se usa como dirección del cliente. Mantén activa esta terminal durante el uso de Android.
 
 3. En Windows, permite conexiones TCP entrantes al puerto 5000 para redes privadas cuando el Firewall lo solicite. El build `debug` permite HTTP para esta prueba local. No configures port forwarding ni expongas este servidor de desarrollo directamente a Internet.
-4. Obtén la IPv4 Wi-Fi de la laptop con `ipconfig` (sección del adaptador inalámbrico). Por ejemplo, si es `192.168.1.34`, en la pantalla de acceso Android configura:
+4. Obtén la IPv4 Wi-Fi de la laptop con `ipconfig` (sección del adaptador inalámbrico). Por ejemplo, si es `192.168.1.34`, en el build debug pulsa **Servidor** y configura:
 
 ```text
 http://192.168.1.34:5000/api
 ```
 
-La dirección debe ser la IPv4 actual de la laptop, no `localhost` ni `127.0.0.1` desde el teléfono. La app la guarda para los siguientes inicios y permite cambiarla con **Servidor** si cambia la IP. Para que distintos teléfonos la encuentren de forma estable, configura una reserva DHCP en el router o usa un nombre DNS local. En el emulador Android puede usarse `http://10.0.2.2:5000/api`.
+La dirección debe ser la IPv4 actual de la laptop, no `localhost` ni `127.0.0.1` desde el teléfono. La app la guarda para los siguientes inicios. Para que distintos teléfonos la encuentren de forma estable, configura una reserva DHCP en el router o usa un nombre DNS local. En el emulador Android puede usarse `http://10.0.2.2:5000/api`.
 
 ## Compilar
 

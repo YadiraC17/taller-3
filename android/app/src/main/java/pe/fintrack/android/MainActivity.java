@@ -111,17 +111,6 @@ public class MainActivity extends Activity {
         subtitle.setPadding(0, 0, 0, dp(22));
         root.addView(subtitle);
 
-        final EditText apiInput = isDebugBuild()
-                ? input("URL base de la API", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI)
-                : null;
-        if (apiInput != null) {
-            apiInput.setText(apiBase);
-            root.addView(apiInput);
-            TextView apiHint = text("Producción usa el servidor configurado. En debug puedes cambiarlo por la IP de la laptop o 10.0.2.2.", 12, MUTED, false);
-            apiHint.setPadding(0, dp(4), 0, dp(12));
-            root.addView(apiHint);
-        }
-
         EditText nameInput = input("Nombre", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         root.addView(nameInput);
         EditText emailInput = input("Correo electrónico", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -133,22 +122,10 @@ public class MainActivity extends Activity {
         root.addView(message);
 
         Button loginButton = button("Iniciar sesión", FOREST);
-        if (apiInput != null) {
-            Button testServerButton = button("Probar servidor", TEAL);
-            root.addView(testServerButton);
-            testServerButton.setOnClickListener(view -> {
-                if (!applyApiBase(apiInput, message)) return;
-                String serverRoot = apiBase.replaceFirst("/api$", "");
-                message.setText("Probando conexión...");
-                executor.execute(() -> {
-                    try {
-                        JSONObject response = ApiClient.request(serverRoot, "/", "GET", "", null);
-                        runOnUiThread(() -> message.setText("Servidor disponible: " + response.optString("estado", "conectado")));
-                    } catch (Exception error) {
-                        runOnUiThread(() -> message.setText("No conecta con " + serverRoot + ". Verifica Wi-Fi, IP y firewall."));
-                    }
-                });
-            });
+        if (isDebugBuild()) {
+            Button serverButton = smallButton("Servidor");
+            root.addView(serverButton);
+            serverButton.setOnClickListener(view -> showApiConfigDialog());
         }
         root.addView(loginButton);
         Button registerButton = button("Crear cuenta", TEAL);
@@ -156,7 +133,6 @@ public class MainActivity extends Activity {
         setContentView(root);
 
         loginButton.setOnClickListener(view -> {
-            if (apiInput != null && !applyApiBase(apiInput, message)) return;
             JSONObject payload = new JSONObject();
             try {
                 payload.put("correo", emailInput.getText().toString().trim());
@@ -169,7 +145,6 @@ public class MainActivity extends Activity {
         });
 
         registerButton.setOnClickListener(view -> {
-            if (apiInput != null && !applyApiBase(apiInput, message)) return;
             if (nameInput.getText().toString().trim().isEmpty()) {
                 message.setText("Escribe tu nombre para crear la cuenta.");
                 return;
