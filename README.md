@@ -2,6 +2,16 @@
 
 Backend de finanzas personales. El servidor REST Flask usa SQLite en desarrollo y puede conectarse a PostgreSQL en la nube; los clientes, incluido el APK Android, consumen la API y no contienen la lógica financiera.
 
+## Entregables en GitHub
+
+- **Código cliente Android:** [`android/`](./android/).
+- **API REST y backend:** [`backend/`](./backend/).
+- **README e instrucciones:** este archivo y [`android/README.md`](./android/README.md).
+- **Configuración:** [`render.yaml`](./render.yaml), [`backend/.env.example`](./backend/.env.example) y [`deploy/`](./deploy/).
+- **Esquema de base de datos:** [`backend/SCHEMA.md`](./backend/SCHEMA.md).
+- **Historial de cambios:** [`CHANGELOG.md`](./CHANGELOG.md) y el historial de commits de Git.
+- **APK Android de prueba:** [descargar](https://github.com/YadiraC17/taller-3/raw/refs/heads/main/downloads/FINTRACK-prueba.apk).
+
 ## Requisitos
 
 - Python 3.11.
