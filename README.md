@@ -70,7 +70,7 @@ El blueprint [render.yaml](./render.yaml) configura una API Flask en Render Free
 2. Sube el repositorio a GitHub y, en Render, crea un servicio desde el blueprint seleccionando ese repositorio y la rama `main`.
 3. Cuando Render solicite `DATABASE_URL`, pega la cadena de conexión de Neon. Render también generará `SECRET_KEY` y `JWT_SECRET_KEY`; mantenlas como variables privadas.
 4. Espera a que termine el despliegue. Prueba `https://<nombre-del-servicio>.onrender.com/`; debe responder con el estado de FINTRACK. La migración de la base se ejecuta al iniciar.
-5. En Android, configura `https://<nombre-del-servicio>.onrender.com/api` como servidor. El servicio gratuito puede tardar en responder al primer pedido después de estar inactivo.
+5. La APK de Android usa automáticamente `https://<nombre-del-servicio>.onrender.com/api`; no se necesita configurar la URL en el teléfono. El servicio gratuito puede tardar en responder al primer pedido después de estar inactivo.
 
 No uses la base SQLite local en el servicio de Render ni subas `backend/instance/fintrack.db`: contiene datos locales y no forma parte del despliegue.
 
@@ -90,4 +90,8 @@ La primera ejecución aplica las migraciones. `fintrack_data` conserva SQLite al
 
 ## Clientes
 
-El APK se desarrolla por separado en la carpeta hermana `FINTRACK-ANDROID`. Para desarrollo local, configura la URL de la laptop y puerto `5000` en el build debug. En producción, configura `https://<DOMAIN>/api`; los builds release rechazan HTTP. El backend es la fuente de verdad para autenticación, persistencia, reglas y reportes.
+El proyecto Android está en [`android/`](./android/). La APK de producción usa la URL HTTPS configurada al compilar y oculta los controles de servidor; el usuario no tiene que ingresarla. El build debug permite cambiarla para desarrollo local. El backend es la fuente de verdad para autenticación, persistencia, reglas y reportes.
+
+## APK para pruebas
+
+[Descargar FINTRACK para Android](https://github.com/YadiraC17/taller-3/raw/refs/heads/main/downloads/FINTRACK-prueba.apk). Esta APK de depuración viene preconfigurada para la API en Render; no hace falta ingresar la URL. Android puede pedir autorización para instalar aplicaciones descargadas fuera de Play Store. El servicio gratuito puede tardar en responder después de estar inactivo.

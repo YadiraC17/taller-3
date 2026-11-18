@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
-    private static final String DEFAULT_API_BASE = "";
+    private static final String DEFAULT_API_BASE = "https://fintrack-api-392k.onrender.com/api";
     private static final int FOREST = 0xFF143D35;
     private static final int TEAL = 0xFF367F70;
     private static final int INK = 0xFF1B2C28;
@@ -53,7 +53,10 @@ public class MainActivity extends Activity {
         getWindow().setStatusBarColor(FOREST);
         getWindow().setNavigationBarColor(FOREST);
         preferences = getSharedPreferences("fintrack_android", MODE_PRIVATE);
-        apiBase = preferences.getString("api_base", DEFAULT_API_BASE);
+        String savedApiBase = preferences.getString("api_base", "");
+        apiBase = isDebugBuild() && !savedApiBase.trim().isEmpty()
+                ? savedApiBase
+                : DEFAULT_API_BASE;
         token = preferences.getString("access_token", "");
         if (token.isEmpty()) {
             showLogin();
@@ -108,12 +111,16 @@ public class MainActivity extends Activity {
         subtitle.setPadding(0, 0, 0, dp(22));
         root.addView(subtitle);
 
-        EditText apiInput = input("URL base de la API", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
-        apiInput.setText(apiBase);
-        root.addView(apiInput);
-        TextView apiHint = text("Producción: usa la URL HTTPS de la API. Desarrollo: IP de la laptop o 10.0.2.2 en debug.", 12, MUTED, false);
-        apiHint.setPadding(0, dp(4), 0, dp(12));
-        root.addView(apiHint);
+        final EditText apiInput = isDebugBuild()
+                ? input("URL base de la API", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI)
+                : null;
+        if (apiInput != null) {
+            apiInput.setText(apiBase);
+            root.addView(apiInput);
+            TextView apiHint = text("Producción usa el servidor configurado. En debug puedes cambiarlo por la IP de la laptop o 10.0.2.2.", 12, MUTED, false);
+            apiHint.setPadding(0, dp(4), 0, dp(12));
+            root.addView(apiHint);
+        }
 
         EditText nameInput = input("Nombre", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         root.addView(nameInput);
@@ -126,29 +133,30 @@ public class MainActivity extends Activity {
         root.addView(message);
 
         Button loginButton = button("Iniciar sesión", FOREST);
-        Button testServerButton = button("Probar servidor", TEAL);
-        root.addView(testServerButton);
+        if (apiInput != null) {
+            Button testServerButton = button("Probar servidor", TEAL);
+            root.addView(testServerButton);
+            testServerButton.setOnClickListener(view -> {
+                if (!applyApiBase(apiInput, message)) return;
+                String serverRoot = apiBase.replaceFirst("/api$", "");
+                message.setText("Probando conexión...");
+                executor.execute(() -> {
+                    try {
+                        JSONObject response = ApiClient.request(serverRoot, "/", "GET", "", null);
+                        runOnUiThread(() -> message.setText("Servidor disponible: " + response.optString("estado", "conectado")));
+                    } catch (Exception error) {
+                        runOnUiThread(() -> message.setText("No conecta con " + serverRoot + ". Verifica Wi-Fi, IP y firewall."));
+                    }
+                });
+            });
+        }
         root.addView(loginButton);
         Button registerButton = button("Crear cuenta", TEAL);
         root.addView(registerButton);
         setContentView(root);
 
-        testServerButton.setOnClickListener(view -> {
-            if (!applyApiBase(apiInput, message)) return;
-            String serverRoot = apiBase.replaceFirst("/api$", "");
-            message.setText("Probando conexión...");
-            executor.execute(() -> {
-                try {
-                    JSONObject response = ApiClient.request(serverRoot, "/", "GET", "", null);
-                    runOnUiThread(() -> message.setText("Servidor disponible: " + response.optString("estado", "conectado")));
-                } catch (Exception error) {
-                    runOnUiThread(() -> message.setText("No conecta con " + serverRoot + ". Verifica Wi-Fi, IP y firewall."));
-                }
-            });
-        });
-
         loginButton.setOnClickListener(view -> {
-            if (!applyApiBase(apiInput, message)) return;
+            if (apiInput != null && !applyApiBase(apiInput, message)) return;
             JSONObject payload = new JSONObject();
             try {
                 payload.put("correo", emailInput.getText().toString().trim());
@@ -161,7 +169,7 @@ public class MainActivity extends Activity {
         });
 
         registerButton.setOnClickListener(view -> {
-            if (!applyApiBase(apiInput, message)) return;
+            if (apiInput != null && !applyApiBase(apiInput, message)) return;
             if (nameInput.getText().toString().trim().isEmpty()) {
                 message.setText("Escribe tu nombre para crear la cuenta.");
                 return;
@@ -558,11 +566,13 @@ public class MainActivity extends Activity {
         TextView heading = text("FINTRACK · " + title, 22, FOREST, true);
         header.addView(heading, new LinearLayout.LayoutParams(0, -2, 1));
         Button logout = smallButton("Salir");
-        Button server = smallButton("Servidor");
-        header.addView(server);
+        if (isDebugBuild()) {
+            Button server = smallButton("Servidor");
+            header.addView(server);
+            server.setOnClickListener(view -> showApiConfigDialog());
+        }
         header.addView(logout);
         root.addView(header);
-        server.setOnClickListener(view -> showApiConfigDialog());
         logout.setOnClickListener(view -> {
             String sessionToken = token;
             String serverUrl = apiBase;
@@ -763,9 +773,7 @@ public class MainActivity extends Activity {
     private boolean applyApiBase(EditText input, TextView message) {
         String value = input.getText().toString().trim().replaceAll("/+$", "");
         boolean usesHttps = value.startsWith("https://");
-        boolean isDebugBuild = (getApplicationInfo().flags
-                & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        boolean allowsDebugHttp = isDebugBuild && value.startsWith("http://");
+        boolean allowsDebugHttp = isDebugBuild() && value.startsWith("http://");
         int schemeEnd = value.indexOf("://") + 3;
         int apiPath = value.lastIndexOf("/api");
         if ((!usesHttps && !allowsDebugHttp)
@@ -780,6 +788,11 @@ public class MainActivity extends Activity {
         apiBase = value;
         saveApiBase();
         return true;
+    }
+
+    private boolean isDebugBuild() {
+        return (getApplicationInfo().flags
+                & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
     private void clearSession() {

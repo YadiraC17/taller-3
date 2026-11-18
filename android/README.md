@@ -23,7 +23,7 @@ El móvil consume, entre otros, estos endpoints protegidos:
 - `GET /api/transacciones?page=<pagina>&per_page=50` (máximo 100 por página)
 - `POST /api/auth/logout` para revocar el JWT de la sesión actual
 
-Android envía el token con `Authorization: Bearer <JWT>`. No se implementan cálculos de reportes en la app; el servidor obtiene la identidad del token y consulta los datos del usuario en SQLite.
+Android envía el token con `Authorization: Bearer <JWT>`. No se implementan cálculos de reportes en la app; el servidor obtiene la identidad del token y consulta los datos del usuario en la base de datos configurada.
 
 ## Iniciar el servidor en la laptop
 
@@ -61,8 +61,8 @@ El APK de depuración se genera en `app/build/outputs/apk/debug/app-debug.apk`. 
 .\gradlew.bat assembleDebug "-Pandroid.aapt2FromMavenOverride=$env:LOCALAPPDATA/Android/Sdk/build-tools/36.0.0/aapt2.exe"
 ```
 
-Para una prueba local, instala el APK debug y usa la IP LAN indicada arriba. Para producción, instala el APK release y configura `https://<DOMAIN>/api` desde **Servidor** o en la pantalla de acceso.
+Para una prueba local, instala el APK debug y usa la IP LAN indicada arriba. El APK release incluye la URL HTTPS de producción y no muestra controles de configuración del servidor, por lo que el usuario no tiene que introducirla.
 
 ## Seguridad de red
 
-Los builds `release` requieren HTTPS; el permiso HTTP se habilita solo en `debug` para desarrollo local. Antes de generar un APK de producción, configura en la app `https://<DOMAIN>/api`. No publiques el puerto 5000 en Internet: usa HTTPS, secretos propios y un servidor WSGI de producción.
+Los builds `release` requieren HTTPS; el permiso HTTP se habilita solo en `debug` para desarrollo local. La URL de producción se define en `DEFAULT_API_BASE` antes de compilar el APK. No publiques el puerto 5000 en Internet: usa HTTPS, secretos propios y un servidor WSGI de producción.
