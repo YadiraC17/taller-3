@@ -34,7 +34,7 @@ El listado paginado de transacciones incluye además `pagination`. Las respuesta
 
 ## Rutas
 
-Todas las rutas de la tabla son relativas a la URL base `/api`.
+Excepto `GET /`, que consulta la raíz del host, todas las rutas de la tabla son relativas a la URL base `/api`.
 
 | Método | Ruta | Auth | Parámetros / cuerpo | Éxito | Errores esperables |
 |---|---|---:|---|---:|---|
@@ -288,4 +288,4 @@ Ejemplo de error de validación:
 
 ## Postman
 
-Importa [`FINTRACK.postman_collection.json`](./FINTRACK.postman_collection.json). La colección define `baseUrl`, `serverUrl` y `token`, y guarda automáticamente el JWT después de un login exitoso. Para una base local, cambia las variables de URL en Postman. No exportes ni compartas una colección que contenga tu token real.
+Importa [`FINTRACK.postman_collection.json`](./FINTRACK.postman_collection.json). La colección define `baseUrl`, `serverUrl` y `token`, y guarda automáticamente el JWT después de un login exitoso. Cambia `correo` por una dirección nueva si vuelves a ejecutar el registro. Las solicitudes de limpieza y cierre de sesión están al final. Para una base local, cambia las variables de URL en Postman. No exportes ni compartas una colección que contenga tu token real.

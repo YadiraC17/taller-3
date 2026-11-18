@@ -149,26 +149,6 @@
             "method": "GET",
             "url": "{{baseUrl}}/auth/me"
           }
-        },
-        {
-          "name": "Cerrar sesión (revoca y limpia token)",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/auth/logout"
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "  pm.collectionVariables.unset('token');",
-                  "}"
-                ]
-              }
-            }
-          ]
         }
       ]
     },
@@ -250,13 +230,6 @@
                 }
               }
             },
-            "url": "{{baseUrl}}/categorias/{{id_categoria}}"
-          }
-        },
-        {
-          "name": "Eliminar categoría",
-          "request": {
-            "method": "DELETE",
             "url": "{{baseUrl}}/categorias/{{id_categoria}}"
           }
         }
@@ -342,13 +315,6 @@
             },
             "url": "{{baseUrl}}/transacciones/{{id_transaccion}}"
           }
-        },
-        {
-          "name": "Eliminar transacción",
-          "request": {
-            "method": "DELETE",
-            "url": "{{baseUrl}}/transacciones/{{id_transaccion}}"
-          }
         }
       ]
     },
@@ -432,13 +398,6 @@
             },
             "url": "{{baseUrl}}/presupuestos/{{id_presupuesto}}"
           }
-        },
-        {
-          "name": "Eliminar presupuesto",
-          "request": {
-            "method": "DELETE",
-            "url": "{{baseUrl}}/presupuestos/{{id_presupuesto}}"
-          }
         }
       ]
     },
@@ -465,6 +424,52 @@
             "method": "GET",
             "url": "{{baseUrl}}/reportes/evolucion?anio={{anio}}"
           }
+        }
+      ]
+    },
+    {
+      "name": "Limpieza",
+      "item": [
+        {
+          "name": "Eliminar transacción",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/transacciones/{{id_transaccion}}"
+          }
+        },
+        {
+          "name": "Eliminar presupuesto",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/presupuestos/{{id_presupuesto}}"
+          }
+        },
+        {
+          "name": "Eliminar categoría",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/categorias/{{id_categoria}}"
+          }
+        },
+        {
+          "name": "Cerrar sesión (revoca y limpia token)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.unset('token');",
+                  "}"
+                ]
+              }
+            }
+          ]
         }
       ]
     }
