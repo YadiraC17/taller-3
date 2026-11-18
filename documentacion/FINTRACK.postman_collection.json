@@ -1,0 +1,472 @@
+{
+  "info": {
+    "_postman_id": "d24e20c7-8cb9-43e4-9f64-f29ad8134c11",
+    "name": "FINTRACK API",
+    "description": "Colección de prueba para la API REST FINTRACK. Ejecuta registro, login y luego las solicitudes protegidas. El token se guarda automáticamente tras iniciar sesión.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "serverUrl",
+      "value": "https://fintrack-api-392k.onrender.com"
+    },
+    {
+      "key": "baseUrl",
+      "value": "https://fintrack-api-392k.onrender.com/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "nombre",
+      "value": "Ana Demo"
+    },
+    {
+      "key": "correo",
+      "value": "ana@example.com"
+    },
+    {
+      "key": "password",
+      "value": "Cambiar123!"
+    },
+    {
+      "key": "id_categoria",
+      "value": "1"
+    },
+    {
+      "key": "id_transaccion",
+      "value": "1"
+    },
+    {
+      "key": "id_presupuesto",
+      "value": "1"
+    },
+    {
+      "key": "mes",
+      "value": "11"
+    },
+    {
+      "key": "anio",
+      "value": "2026"
+    }
+  ],
+  "item": [
+    {
+      "name": "Salud",
+      "item": [
+        {
+          "name": "Estado del servidor",
+          "request": {
+            "method": "GET",
+            "url": "{{serverUrl}}/"
+          },
+          "auth": {
+            "type": "noauth"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Registrar usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"{{nombre}}\",\n  \"correo\": \"{{correo}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/register"
+          },
+          "auth": {
+            "type": "noauth"
+          }
+        },
+        {
+          "name": "Iniciar sesión (guarda token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{correo}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "auth": {
+            "type": "noauth"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().data.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Usuario autenticado",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me"
+          }
+        },
+        {
+          "name": "Cerrar sesión (revoca y limpia token)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.unset('token');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categorías",
+      "item": [
+        {
+          "name": "Crear categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Alimentación\",\n  \"tipo\": \"GASTO\",\n  \"descripcion\": \"Compras y comidas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/categorias"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('id_categoria', pm.response.json().data.id_categoria);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar categorías",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categorias"
+          }
+        },
+        {
+          "name": "Filtrar categorías por tipo",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categorias?tipo=GASTO"
+          }
+        },
+        {
+          "name": "Consultar categoría",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categorias/{{id_categoria}}"
+          }
+        },
+        {
+          "name": "Actualizar categoría",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Alimentación\",\n  \"tipo\": \"GASTO\",\n  \"descripcion\": \"Gastos diarios\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/categorias/{{id_categoria}}"
+          }
+        },
+        {
+          "name": "Eliminar categoría",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/categorias/{{id_categoria}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transacciones",
+      "item": [
+        {
+          "name": "Crear transacción",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_categoria\": {{id_categoria}},\n  \"tipo\": \"GASTO\",\n  \"monto\": 42.50,\n  \"moneda\": \"PEN\",\n  \"fecha\": \"2026-11-17\",\n  \"descripcion\": \"Compra semanal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/transacciones"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('id_transaccion', pm.response.json().data.id_transaccion);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar transacciones paginadas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transacciones?page=1&per_page=50"
+          }
+        },
+        {
+          "name": "Filtrar transacciones",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transacciones?page=1&per_page=50&tipo=GASTO&moneda=PEN&categoria={{id_categoria}}&fecha_inicio=2026-01-01&fecha_fin=2026-12-31"
+          }
+        },
+        {
+          "name": "Consultar transacción",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transacciones/{{id_transaccion}}"
+          }
+        },
+        {
+          "name": "Actualizar transacción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto\": 48.00,\n  \"descripcion\": \"Compra semanal actualizada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/transacciones/{{id_transaccion}}"
+          }
+        },
+        {
+          "name": "Eliminar transacción",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/transacciones/{{id_transaccion}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Presupuestos",
+      "item": [
+        {
+          "name": "Crear presupuesto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_categoria\": {{id_categoria}},\n  \"monto_limite\": 500,\n  \"moneda\": \"PEN\",\n  \"mes\": {{mes}},\n  \"anio\": {{anio}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/presupuestos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('id_presupuesto', pm.response.json().data.id_presupuesto);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar presupuestos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/presupuestos"
+          }
+        },
+        {
+          "name": "Seguimiento de presupuestos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/presupuestos/seguimiento?mes={{mes}}&anio={{anio}}"
+          }
+        },
+        {
+          "name": "Consultar presupuesto",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/presupuestos/{{id_presupuesto}}"
+          }
+        },
+        {
+          "name": "Actualizar presupuesto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto_limite\": 650\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/presupuestos/{{id_presupuesto}}"
+          }
+        },
+        {
+          "name": "Eliminar presupuesto",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/presupuestos/{{id_presupuesto}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Resumen financiero",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/resumen?mes={{mes}}&anio={{anio}}"
+          }
+        },
+        {
+          "name": "Gastos por categoría",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/gastos-categoria?mes={{mes}}&anio={{anio}}"
+          }
+        },
+        {
+          "name": "Evolución anual",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reportes/evolucion?anio={{anio}}"
+          }
+        }
+      ]
+    }
+  ]
+}

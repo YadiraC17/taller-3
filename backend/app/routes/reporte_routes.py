@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
@@ -23,5 +25,9 @@ def gastos_categoria():
 @api.get("/reportes/evolucion")
 @jwt_required()
 def evolucion():
+    anio = request.args.get("anio")
     data = reporte_service.evolucion(int(get_jwt_identity()), request.args)
-    return success("Evolución financiera calculada", {"anio": request.args.get("anio"), "meses": data})
+    return success(
+        "Evolución financiera calculada",
+        {"anio": int(anio) if anio is not None else date.today().year, "meses": data},
+    )

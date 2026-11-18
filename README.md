@@ -8,6 +8,7 @@ Backend de finanzas personales. El servidor REST Flask usa SQLite en desarrollo 
 - **API REST y backend:** [`backend/`](./backend/).
 - **README e instrucciones:** este archivo y [`android/README.md`](./android/README.md).
 - **Configuración:** [`render.yaml`](./render.yaml), [`backend/.env.example`](./backend/.env.example) y [`deploy/`](./deploy/).
+- **Documentación API y colección de pruebas:** [`documentacion/API.md`](./documentacion/API.md) y [`FINTRACK.postman_collection.json`](./documentacion/FINTRACK.postman_collection.json).
 - **Esquema de base de datos:** [`backend/SCHEMA.md`](./backend/SCHEMA.md).
 - **Historial de cambios:** [`CHANGELOG.md`](./CHANGELOG.md) y el historial de commits de Git.
 - **APK Android de prueba:** [descargar](https://github.com/YadiraC17/taller-3/raw/refs/heads/main/downloads/FINTRACK-prueba.apk).

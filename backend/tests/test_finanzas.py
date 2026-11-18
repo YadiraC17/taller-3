@@ -79,6 +79,15 @@ def test_transaction_budget_tracking_and_report(client, create_account):
     assert evolution["USD"]["ingresos"] == 200
 
 
+def test_evolution_report_returns_default_year(client, create_account):
+    account = create_account()
+    response = client.get("/api/reportes/evolucion", headers=account["headers"])
+
+    assert response.status_code == 200
+    assert response.json["data"]["anio"] == date.today().year
+    assert len(response.json["data"]["meses"]) == 12
+
+
 def test_user_cannot_use_another_users_category(client, create_account):
     owner = create_account("Owner")
     other = create_account("Other")
