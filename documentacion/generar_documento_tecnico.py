@@ -1,4 +1,3 @@
-from datetime import date
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -198,7 +197,7 @@ def section_heading(number, title, summary):
 
 def build_story():
     story = [
-        Spacer(1, 45 * mm),
+        Spacer(1, 38 * mm),
         paragraph("FINTRACK", "CoverTitle"),
         paragraph("Documento técnico", "CoverSubtitle"),
         Spacer(1, 8 * mm),
@@ -212,9 +211,16 @@ def build_story():
             ["Pruebas locales", "SQLite, pytest y Android Gradle"],
             ["API", "https://fintrack-api-392k.onrender.com/api"],
             ["Repositorio", "github.com/YadiraC17/taller-3"],
-            ["Fecha", date.today().strftime("%d/%m/%Y")],
+            ["Fecha", "13/11/2026"],
         ], [42 * mm, 128 * mm], font_size=8),
-        Spacer(1, 24 * mm),
+        paragraph("Integrantes", "SubsectionTitle"),
+        markup(
+            "CANTORIN LOPE, YADIRA JHENYFER<br/>"
+            "DIAZ SILVA JOSE LUIS<br/>"
+            "MORALES SANTIAGO ROSSE EMILY",
+            "SmallES",
+        ),
+        Spacer(1, 14 * mm),
         markup("Cliente Android desacoplado de la persistencia: los datos, reglas financieras y reportes se procesan en el servidor.", "CalloutES"),
         PageBreak(),
     ]
